@@ -14,45 +14,29 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
-# Creacion de la entidad Categorias
-class Categorias(db.Model):
-
-    id_categoria = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50), nullable=False)
-
-    def __init__(self, nombre):
-        self.nombre = nombre
-
-# Creacion de la entidad Generos
-class Generos(db.Model):
-
-    id_genero = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50), nullable=False)
-
-    def __init__(self, nombre):
-        self.nombre = nombre
-
 # Creacion de la BD de Libros
 
 class Libros(db.Model):
 
     id_libro = db.Column(db.Integer,primary_key=True)
-    id_autor = db.Column(db.Integer,foreign_key=True,nullable=True)
-    id_genero = db.Column(db.Integer,db.ForeignKey('generos.id_genero'),nullable=False)
-    id_categoria = db.Column(db.Integer,db.ForeignKey('categorias.id_categoria'),nullable=False)
+    genero = db.Column(db.String(100),nullable=False)
+    categoria = db.Column(db.String(100),nullable=False)
     titulo = db.Column(db.String(100),nullable=False)
+    autor = db.Column(db.String(100),nullable=False)
+    descripcion_autor = db.Column(db.String(255),nullable=False)
     sinopsis = db.Column(db.String(255),nullable=False)
     portada = db.Column(db.String(255),nullable=False)
 
-    def __init__(self,id_libro,id_autor,id_genero,id_categoria,titulo,sinopsis,portada):
+    def __init__(self,id_libro,id_genero,id_categoria,titulo,autor,descripcion_autor,sinopsis,portada):
 
         self.id_libro = id_libro
-        self.id_autor = id_autor
         self.id_genero = id_genero
         self.id_categoria = id_categoria
         self.titulo = titulo
+        self.autor = autor
+        self.descripcion_autor = descripcion_autor
         self.sinopsis = sinopsis
-        self.portada = portada
+        self.portada = portada  
 
 with app.app_context():
 
@@ -64,19 +48,7 @@ class LibrosSchema(ma.Schema):
 
     class Meta:
 
-        fields = ('id_libro','id_autor','id_genero','id_categoria','titulo','sinopsis','portada')
-
-# Esquema para Categorias
-
-class CategoriasSchema(ma.Schema):
-    class Meta:
-        fields = ('id_categoria', 'nombre')
-
-# Esquema para Generos
-
-class GenerosSchema(ma.Schema):
-    class Meta:
-        fields = ('id_genero', 'nombre')
+        fields = ('id_libro','id_genero','id_categoria','titulo','autor','descripcion_autor','sinopsis','portada')
 
 # Una sola respuesta
 
@@ -85,12 +57,6 @@ libro_schema = LibrosSchema()
 # Cuando hayan muchas respuestas
 
 libros_schema = LibrosSchema(many=True)
-
-# Esquema para Categorias
-categorias_schema = CategoriasSchema(many=True)
-
-# Esquema para Generos
-generos_schema = GenerosSchema(many=True)
 
 # ======= GET =======
 
@@ -112,38 +78,6 @@ def getLibros():
 
     # Conversion a JSON
 
-    return response
-
-# Obtener todas las categorias
-
-@app.route('/categorias', methods=['GET'])
-
-def getCategorias():
-
-    all_categorias = Categorias.query.all()
-
-    result = categorias_schema.dump(all_categorias)
-
-    response = jsonify(result)
-
-    response.headers.add('Access-Control-Allow-Origin', '*')
-
-    return response
-
-# Obtener todos los generos
-
-@app.route('/generos', methods=['GET'])
-
-def getGeneros():
-
-    all_generos = Generos.query.all()
-
-    result = generos_schema.dump(all_generos)
-
-    response = jsonify(result)
-
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    
     return response
 
 # ======= POST =======
@@ -232,12 +166,6 @@ def updateLibro(id_libro):
         return jsonify(errors=err.messages), 400
 
 # Mensaje de Bienvenida
-
-@app.route('/',methods=['GET'])
-
-def index():
-    
-    return jsonify({"Mensaje":"Bienvenido"})
 
 if __name__ == '__main__':
 
