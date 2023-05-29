@@ -27,11 +27,11 @@ class Libros(db.Model):
     sinopsis = db.Column(db.String(255),nullable=False)
     portada = db.Column(db.String(255),nullable=False)
 
-    def __init__(self,id_libro,id_genero,id_categoria,titulo,autor,descripcion_autor,sinopsis,portada):
+    def __init__(self,id_libro,genero,categoria,titulo,autor,descripcion_autor,sinopsis,portada):
 
         self.id_libro = id_libro
-        self.id_genero = id_genero
-        self.id_categoria = id_categoria
+        self.genero = genero
+        self.categoria = categoria
         self.titulo = titulo
         self.autor = autor
         self.descripcion_autor = descripcion_autor
@@ -48,7 +48,7 @@ class LibrosSchema(ma.Schema):
 
     class Meta:
 
-        fields = ('id_libro','id_genero','id_categoria','titulo','autor','descripcion_autor','sinopsis','portada')
+        fields = ('id_libro','genero','categoria','titulo','autor','descripcion_autor','sinopsis','portada')
 
 # Una sola respuesta
 
